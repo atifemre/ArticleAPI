@@ -7,10 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
 using api.Models;
+using Microsoft.AspNet.OData;
 
 namespace api.Controllers
 {
-    [Route("api/[controller]")]
+    //[Route("api/[controller]")]
+    [Route("api/Articles/{ArticleId:int}/[controller]")]
     [ApiController]
     public class ReviewsController : ControllerBase
     {
@@ -23,6 +25,7 @@ namespace api.Controllers
 
         // GET: api/Reviews
         [HttpGet]
+        [EnableQuery]
         public async Task<ActionResult<IEnumerable<Reviews>>> GetReviews()
         {
             return await _context.Reviews.ToListAsync();
@@ -30,6 +33,7 @@ namespace api.Controllers
 
         // GET: api/Reviews/5
         [HttpGet("{id}")]
+        [EnableQuery]
         public async Task<ActionResult<Reviews>> GetReviews(long id)
         {
             var reviews = await _context.Reviews.FindAsync(id);
@@ -104,5 +108,6 @@ namespace api.Controllers
         {
             return _context.Reviews.Any(e => e.Id == id);
         }
+        
     }
 }

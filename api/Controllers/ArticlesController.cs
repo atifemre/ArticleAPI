@@ -27,21 +27,32 @@ namespace api.Controllers
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<Articles>>> GetArticles()
         {
-            return await _context.Articles.ToListAsync();
-        }
-
-        // GET: api/Articles/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Articles>> GetArticles(long id)
-        {
-            var articles = await _context.Articles.FindAsync(id);
+            var articles = await _context.Articles.ToListAsync();
 
             if (articles == null)
             {
                 return NotFound();
             }
 
-            return articles;
+            return await _context.Articles.Include(t => t.Reviews).ToListAsync();
+        }
+
+        // GET: api/Articles/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Articles>> GetArticles(long id)
+        {
+            var article = await _context.Articles.Include(t => t.Reviews).FirstOrDefaultAsync(t => t.Id == id);
+
+            if (article == null)
+            {
+                return NotFound();
+            }
+            else {
+                //article.Reviews = _context.Reviews.Where(b => b.ArticlesId == id)
+                //                       .OrderBy(b => b.Reviewer).ToList();
+            }
+
+            return article;
         }
 
         // PUT: api/Articles/5
@@ -90,12 +101,16 @@ namespace api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArticles(long id)
         {
-            var articles = await _context.Articles.FindAsync(id);
+            var articles = await _context.Articles.Include(t => t.Reviews).FirstOrDefaultAsync(t => t.Id == id);
             if (articles == null)
             {
                 return NotFound();
             }
+            
+            //var articleReviews = _context.Reviews.Where(b => b.ArticlesId == id)
+            //                           .OrderBy(b => b.Reviewer).ToList();
 
+            //_context.Reviews.RemoveRange(articleReviews);
             _context.Articles.Remove(articles);
             await _context.SaveChangesAsync();
 
