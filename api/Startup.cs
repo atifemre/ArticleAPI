@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.OData.Extensions;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
+using Newtonsoft.Json;
 
 namespace api
 {
@@ -30,7 +31,10 @@ namespace api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddNewtonsoftJson(
+                options => { options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; }
+                );
+
             services.AddOData();
 
             services.AddSwaggerGen(c =>

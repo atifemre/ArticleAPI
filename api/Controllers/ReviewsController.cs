@@ -34,6 +34,8 @@ namespace api.Controllers
         // GET: api/Reviews/5
         [HttpGet("{id}")]
         [EnableQuery]
+        [ActionName(nameof(GetReviews))]
+
         public async Task<ActionResult<Reviews>> GetReviews(long id)
         {
             var reviews = await _context.Reviews.FindAsync(id);
@@ -49,13 +51,19 @@ namespace api.Controllers
         // PUT: api/Reviews/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutReviews(long id, Reviews reviews)
+        public async Task<IActionResult> PutReviews(long articleid, long id, Reviews reviews)
         {
             if (id != reviews.Id)
             {
                 return BadRequest();
             }
 
+            //Remember Publish Date. there may be better approach, to be investaged later(like one time programmable)
+            var old = await _context.Reviews.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+            reviews.ArticlesId = old.ArticlesId;
+            reviews.PublishDate = old.PublishDate;
+
+            reviews.UpdateDate = DateTime.Now;
             _context.Entry(reviews).State = EntityState.Modified;
 
             try
@@ -74,18 +82,19 @@ namespace api.Controllers
                 }
             }
 
-            return NoContent();
+            return CreatedAtAction(nameof(GetReviews), new { Articleid = articleid, id = reviews.Id }, reviews);
         }
 
         // POST: api/Reviews
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Reviews>> PostReviews(Reviews reviews)
+        public async Task<ActionResult<Reviews>> PostReviews(long articleid, Reviews reviews)
         {
+            reviews.ArticlesId = articleid;
             _context.Reviews.Add(reviews);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetReviews", new { id = reviews.Id }, reviews);
+            return CreatedAtAction(nameof(GetReviews), new { Articleid = articleid, id = reviews.Id }, reviews);
         }
 
         // DELETE: api/Reviews/5

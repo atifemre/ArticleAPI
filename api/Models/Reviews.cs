@@ -10,6 +10,8 @@ namespace api.Models
     {  
         public long Id { get; set; }
         public long ArticlesId { get; set; }
+     //   public Articles Articles { get; set; }
+
         public string Reviewer { get; set; }
         public string ReviewerContent { get; set; }
 
