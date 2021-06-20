@@ -25,7 +25,7 @@ namespace api.Repositories
         public Reviews NewReview(long articleId, Reviews newReview)
         {
             if (!ArticleRepository.ArticlesExists(articleId, _context)||
-                newReview.Reviewer == null) 
+                string.IsNullOrEmpty(newReview.Reviewer)) 
             {   
                 return null;
             }
@@ -64,7 +64,7 @@ namespace api.Repositories
         public Reviews UpdateReview(long reviewId, Reviews review)
         {
             if (reviewId != review.Id||
-                review.Reviewer == null)
+                string.IsNullOrEmpty(review.Reviewer))
             {
                 return null;
             }
