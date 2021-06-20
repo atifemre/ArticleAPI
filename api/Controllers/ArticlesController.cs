@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Data;
 using api.Models;
 using Microsoft.AspNet.OData;
+using api.Repositories;
 
 namespace api.Controllers
 {
@@ -16,10 +17,12 @@ namespace api.Controllers
     public class ArticlesController : ControllerBase
     {
         private readonly apiContext _context;
+        private readonly ArticleRepository _articleRepo;
 
         public ArticlesController(apiContext context)
         {
             _context = context;
+            _articleRepo = new ArticleRepository(_context);
         }
 
         // GET: api/Articles
@@ -27,7 +30,10 @@ namespace api.Controllers
         [EnableQuery]
         public async Task<ActionResult<IEnumerable<Articles>>> GetArticles()
         {
-            var articles = await _context.Articles.ToListAsync();
+
+            var articles = _articleRepo.GetArticles();
+
+           // var articles = await _context.Articles.ToListAsync();
 
             if (articles == null)
             {
@@ -41,15 +47,11 @@ namespace api.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Articles>> GetArticles(long id)
         {
-            var article = await _context.Articles.Include(t => t.Reviews).FirstOrDefaultAsync(t => t.Id == id);
+            var article =  _articleRepo.GetArticleById(id);
 
             if (article == null)
             {
                 return NotFound();
-            }
-            else {
-                //article.Reviews = _context.Reviews.Where(b => b.ArticlesId == id)
-                //                       .OrderBy(b => b.Reviewer).ToList();
             }
 
             return article;
@@ -58,71 +60,34 @@ namespace api.Controllers
         // PUT: api/Articles/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutArticles(long id, Articles articles)
+        public async Task<IActionResult> PutArticles(long id, Articles article)
         {
+            var newArticle = _articleRepo.UpdateArticle(id, article);
 
-            if (id != articles.Id)
-            {
-                return BadRequest();
-            }
-
-            //Remember Publish Date. there may be better approach, to be investaged later(like one time programmable)
-            var old = await _context.Articles.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
-            articles.PublishDate = old.PublishDate; 
-
-            articles.UpdateDate = DateTime.Now;
-            _context.Entry(articles).State = EntityState.Modified;
-
-            try
-            { 
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ArticlesExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetArticles", new {id}, articles);
+            return CreatedAtAction("GetArticles", new {id}, newArticle);
         }
 
         // POST: api/Articles
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Articles>> PostArticles(Articles articles)
+        public async Task<ActionResult<Articles>> NewArticles(Articles articles)
         {
-            articles.PublishDate = DateTime.Now;
-            _context.Articles.Add(articles);
-            await _context.SaveChangesAsync();
+            var newArticle = _articleRepo.NewArticle(articles);
 
-            return CreatedAtAction("GetArticles", new { id = articles.Id }, articles);
+            return CreatedAtAction("GetArticles", new { id = newArticle.Id }, newArticle);
         }
 
         // DELETE: api/Articles/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArticles(long id)
         {
-            var articles = await _context.Articles.Include(t => t.Reviews).FirstOrDefaultAsync(t => t.Id == id);
-            if (articles == null)
+            bool isDeleted = _articleRepo.DeleteArticle(id);
+            if (isDeleted == false)
             {
                 return NotFound();
             }
-            
-            _context.Articles.Remove(articles);
-            await _context.SaveChangesAsync();
 
             return NoContent();
-        }
-
-        private bool ArticlesExists(long id)
-        {
-            return _context.Articles.Any(e => e.Id == id);
         }
     }
 }

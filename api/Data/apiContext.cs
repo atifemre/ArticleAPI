@@ -9,6 +9,10 @@ namespace api.Data
 {
     public class apiContext : DbContext
     {
+        public apiContext()
+        {
+        }
+
         public apiContext (DbContextOptions<apiContext> options)
             : base(options)
         {

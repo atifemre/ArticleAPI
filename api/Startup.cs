@@ -15,6 +15,7 @@ using Microsoft.AspNet.OData.Extensions;
 using Microsoft.EntityFrameworkCore;
 using api.Data;
 using Newtonsoft.Json;
+using api.Repositories;
 
 namespace api
 {
@@ -31,11 +32,13 @@ namespace api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            
             services.AddControllers().AddNewtonsoftJson(
                 options => { options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore; }
                 );
 
             services.AddOData();
+
 
             services.AddSwaggerGen(c =>
             {
@@ -44,6 +47,9 @@ namespace api
 
             services.AddDbContext<apiContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("apiContext")));
+
+            services.AddScoped<IArticleRepository, ArticleRepository>();
+            services.AddScoped<IReviewRepository, ReviewRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
