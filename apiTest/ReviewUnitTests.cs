@@ -162,6 +162,7 @@ namespace apiTest
             Reviews review = new()
             {
               //  Reviewer = "Add Review Unit Test",
+                Reviewer = "",
                 ReviewerContent = "This test shall pass."
             };
             IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
