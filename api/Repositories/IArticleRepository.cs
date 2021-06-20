@@ -10,8 +10,8 @@ namespace api.Repositories
     {
         public IEnumerable<Articles> GetArticles();
         public Articles GetArticleById(long id);
-        public Articles NewArticle(Articles employee);
-        public Articles UpdateArticle(long articleId, Articles employee);
+        public Articles NewArticle(Articles article);
+        public Articles UpdateArticle(long articleId, Articles article);
         public bool DeleteArticle(long articleId);
     }
 }
