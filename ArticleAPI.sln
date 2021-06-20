@@ -6,6 +6,9 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "api", "api\api.csproj", "{4E3395E9-839D-404D-BE6B-0F92D42E5638}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "apiTest", "apiTest\apiTest.csproj", "{4AF3062C-B562-41CF-B130-D25EF432C087}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4E3395E9-839D-404D-BE6B-0F92D42E5638} = {4E3395E9-839D-404D-BE6B-0F92D42E5638}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

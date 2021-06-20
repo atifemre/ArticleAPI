@@ -9,6 +9,9 @@ namespace api.Data
 {
     public class apiContext : DbContext
     {
+        public DbSet<Articles> Articles { get; set; }
+        public DbSet<Reviews> Reviews { get; set; }
+
         public apiContext()
         {
         }
@@ -18,8 +21,5 @@ namespace api.Data
         {
         }
 
-        public DbSet<api.Models.Articles> Articles { get; set; }
-
-        public DbSet<api.Models.Reviews> Reviews { get; set; }
     }
 }
