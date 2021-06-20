@@ -18,6 +18,7 @@ namespace apiTest
         private Articles article = new()
         {
             Title = "Article Unit Test for Reviews",
+            Author = "John Loke Lost",
             ArticleContent = "This test shall pass.",
             StarCount = 5,
         };
@@ -31,9 +32,11 @@ namespace apiTest
                 ReviewerContent = "This test shall pass."
             };
 
-            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+            Articles newArticle = articleRepo.NewArticle(article);
 
-            Reviews newReview = reviewRepo.NewReview(article.Id,review);
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            Reviews newReview = reviewRepo.NewReview(newArticle.Id,review);
 
             Assert.Equal(review.ReviewerContent, newReview.ReviewerContent);
         }
@@ -47,9 +50,12 @@ namespace apiTest
                 ReviewerContent = "This test shall pass."
             };
 
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+            Articles newArticle = articleRepo.NewArticle(article);
+
             IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
 
-            Reviews newReview = reviewRepo.NewReview(article.Id,review);
+            Reviews newReview = reviewRepo.NewReview(newArticle.Id,review);
             Reviews returnedReview = reviewRepo.GetReviewById(review.Id);
 
             Assert.Equal(newReview, returnedReview);
@@ -64,9 +70,11 @@ namespace apiTest
                 ReviewerContent = "This test shall pass."
             };
 
-            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+            Articles newArticle = articleRepo.NewArticle(article);
 
-            Reviews newReview = reviewRepo.NewReview(article.Id,review);
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            Reviews newReview = reviewRepo.NewReview(newArticle.Id,review);
 
             string newReviewContent = "Updated Article Unit Test";
             newReview.ReviewerContent = newReviewContent;
@@ -85,8 +93,10 @@ namespace apiTest
                 ReviewerContent = "This test shall pass."
             };
 
-            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+            Articles newArticle = articleRepo.NewArticle(article);
 
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
             Reviews newReview = reviewRepo.NewReview(article.Id, review);
 
             Assert.True(reviewRepo.DeleteReview(newReview.Id));
@@ -106,8 +116,10 @@ namespace apiTest
                 ReviewerContent = "This test shall pass."
             };
 
-            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB("inMemDB"));
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB("inMemDB"));
+            Articles newArticle = articleRepo.NewArticle(article);
 
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB("inMemDB"));
             reviewRepo.NewReview(article.Id,review);
             reviewRepo.NewReview(article.Id,review1);
 
@@ -128,5 +140,60 @@ namespace apiTest
 
             return context;
         }
+
+        [Fact]
+        public void Create_Review_NotExistArticle_NotValidTest()
+        {
+            Reviews review = new()
+            {
+                Reviewer = "Add Review Unit Test",
+                ReviewerContent = "This test shall pass."
+            };
+
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            Reviews newReview = reviewRepo.NewReview(article.Id, review);
+
+            Assert.Null(newReview);
+        }
+
+        [Fact]
+        public void Create_Review_ReviwerEmpty_NotValidTest()
+        {
+            Reviews review = new()
+            {
+              //  Reviewer = "Add Review Unit Test",
+                ReviewerContent = "This test shall pass."
+            };
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+            Articles newArticle = articleRepo.NewArticle(article);
+
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            Reviews newReview = reviewRepo.NewReview(newArticle.Id, review);
+
+            Assert.Null(newReview);
+        }
+
+        [Fact]
+        public void Update_Review_ReviwerDeleted_NotValidTest()
+        {
+            Reviews review = new()
+            {
+                Reviewer = "Update Review Unit Test",
+                ReviewerContent = "This test shall pass."
+            };
+
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+            Articles newArticle = articleRepo.NewArticle(article);
+
+            IReviewRepository reviewRepo = new ReviewRepository(GetInMemoryDB());
+            Reviews newReview = reviewRepo.NewReview(newArticle.Id, review);
+
+            newReview.Reviewer = null;
+
+            Reviews updatedReview = reviewRepo.UpdateReview(newReview.Id, newReview);
+
+            Assert.Null(updatedReview);
+        }
+
     }
 }

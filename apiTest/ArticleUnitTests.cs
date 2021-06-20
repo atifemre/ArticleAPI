@@ -140,7 +140,7 @@ namespace apiTest
         }
 
         [Fact]
-        public void Update_Article_NotValidTest()
+        public void Update_Article_TitleDeleted_NotValidTest()
         {
             Articles article = new()
             {
@@ -159,6 +159,24 @@ namespace apiTest
             Articles updatedArticle = articleRepo.UpdateArticle(newArticle.Id, newArticle);
 
             Assert.Null(updatedArticle);
+        }
+
+        [Fact]
+        public void Delete_Article_NotValidTest()
+        {
+            Articles article = new()
+            {
+                Title = "Delete Unit Test",
+                Author = "Benjamin",
+                ArticleContent = "This test shall pass.",
+                StarCount = 5,
+            };
+
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+
+            Articles newArticle = articleRepo.NewArticle(article);
+
+            Assert.False(articleRepo.DeleteArticle(newArticle.Id+1));
         }
 
         //Better to be mockdb but encountered some problems while contructing mock architeture

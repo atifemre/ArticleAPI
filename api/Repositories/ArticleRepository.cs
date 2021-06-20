@@ -116,11 +116,10 @@ namespace api.Repositories
             try
             {
                 Save();
-             //    _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ArticlesExists(articleId))
+                if (!ArticlesExists(articleId, _context))
                 {
                     return null;
                 }
@@ -133,9 +132,9 @@ namespace api.Repositories
             return updatedArticle;
         }
 
-        private bool ArticlesExists(long id)
+        public static bool ArticlesExists(long id, apiContext dbcontext)
         {
-            return _context.Articles.Any(e => e.Id == id);
+            return dbcontext.Articles.Any(e => e.Id == id);
         }
         public void Save()
         {

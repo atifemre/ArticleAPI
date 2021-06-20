@@ -24,6 +24,12 @@ namespace api.Repositories
         }
         public Reviews NewReview(long articleId, Reviews newReview)
         {
+            if (!ArticleRepository.ArticlesExists(articleId, _context)||
+                newReview.Reviewer == null) 
+            {   
+                return null;
+            }
+
             newReview.ArticlesId = articleId;
             newReview.PublishDate = DateTime.Now;
             _context.Reviews.Add(newReview);
@@ -57,7 +63,8 @@ namespace api.Repositories
 
         public Reviews UpdateReview(long reviewId, Reviews review)
         {
-            if (reviewId != review.Id)
+            if (reviewId != review.Id||
+                review.Reviewer == null)
             {
                 return null;
             }
