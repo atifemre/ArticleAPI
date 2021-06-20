@@ -40,7 +40,8 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            return await _context.Articles.Include(t => t.Reviews).ToListAsync();
+            return Ok(articles);
+            //return await _context.Articles.Include(t => t.Reviews).ToListAsync();
         }
 
         // GET: api/Articles/5

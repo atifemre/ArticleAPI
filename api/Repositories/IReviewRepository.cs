@@ -6,13 +6,13 @@ using api.Models;
 
 namespace api.Repositories
 {
-    interface IReviewRepository
+    public interface IReviewRepository
     {
-        IEnumerable<Reviews> GetReviews();
-        Reviews GetReviewById(int id);
-        Reviews NewReview(Reviews employee);
-        Reviews UpdateReview(Reviews employee);
-        void DeleteReview(int id);
-        void Save();
+        public IEnumerable<Reviews> GetReviews();
+        public Reviews GetReviewById(long id);
+        public Reviews NewReview(long articleId, Reviews newReview);
+        public Reviews UpdateReview(long reviewId, Reviews updatedReview);
+        public bool DeleteReview(long id);
+
     }
 }

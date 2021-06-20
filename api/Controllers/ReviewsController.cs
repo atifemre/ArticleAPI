@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using api.Data;
 using api.Models;
 using Microsoft.AspNet.OData;
+using api.Repositories;
 
 namespace api.Controllers
 {
@@ -17,10 +18,12 @@ namespace api.Controllers
     public class ReviewsController : ControllerBase
     {
         private readonly apiContext _context;
+        private readonly ReviewRepository _reviewRepo;
 
         public ReviewsController(apiContext context)
         {
             _context = context;
+            _reviewRepo = new ReviewRepository(_context);
         }
 
         // GET: api/Reviews
@@ -38,7 +41,7 @@ namespace api.Controllers
 
         public async Task<ActionResult<Reviews>> GetReviews(long id)
         {
-            var reviews = await _context.Reviews.FindAsync(id);
+            var reviews = _reviewRepo.GetReviewById(id);
 
             if (reviews == null)
             {
@@ -53,70 +56,37 @@ namespace api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutReviews(long articleid, long id, Reviews reviews)
         {
-            if (id != reviews.Id)
+            var newReview = _reviewRepo.UpdateReview(articleid,reviews);
+
+            if (newReview == null)
             {
-                return BadRequest();
+                return  NotFound();
             }
 
-            //Remember Publish Date. there may be better approach, to be investaged later(like one time programmable)
-            var old = await _context.Reviews.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
-            reviews.ArticlesId = old.ArticlesId;
-            reviews.PublishDate = old.PublishDate;
-
-            reviews.UpdateDate = DateTime.Now;
-            _context.Entry(reviews).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ReviewsExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction(nameof(GetReviews), new { Articleid = articleid, id = reviews.Id }, reviews);
+            return CreatedAtAction(nameof(GetReviews), new { Articleid = articleid, id = newReview.Id }, newReview);
         }
 
         // POST: api/Reviews
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Reviews>> PostReviews(long articleid, Reviews reviews)
+        public async Task<ActionResult<Reviews>> PostReviews(long articleid, Reviews review)
         {
-            reviews.ArticlesId = articleid;
-            _context.Reviews.Add(reviews);
-            await _context.SaveChangesAsync();
+            var newReview = _reviewRepo.NewReview(articleid,review);            
 
-            return CreatedAtAction(nameof(GetReviews), new { Articleid = articleid, id = reviews.Id }, reviews);
+            return CreatedAtAction(nameof(GetReviews), new { Articleid = articleid, id = newReview.Id }, newReview);
         }
 
         // DELETE: api/Reviews/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteReviews(long id)
         {
-            var reviews = await _context.Reviews.FindAsync(id);
-            if (reviews == null)
+            bool isDeleted = _reviewRepo.DeleteReview(id);
+            if (isDeleted == false)
             {
                 return NotFound();
             }
 
-            _context.Reviews.Remove(reviews);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
-
-        private bool ReviewsExists(long id)
-        {
-            return _context.Reviews.Any(e => e.Id == id);
-        }
-        
     }
 }
