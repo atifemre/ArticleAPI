@@ -11,7 +11,10 @@ namespace api.Models
     public class Articles
     {
         public long Id { get; set; }
+
+        [Required(ErrorMessage = "Title is required")]
         public string Title { get; set; }
+        [Required(ErrorMessage = "Author is required")]
         public string Author { get; set; }
         public string ArticleContent { get; set; }
         public short StarCount { get; set; }

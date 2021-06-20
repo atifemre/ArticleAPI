@@ -70,6 +70,13 @@ namespace api.Repositories
 
         public Articles NewArticle(Articles newArticle)
         {
+            //Validate Fileds, there is a [Required] for this but didnt worked for some reason, will be returned back later
+            if (newArticle.Title == null ||
+                newArticle.Author == null) {
+
+                return null;
+            }
+
             newArticle.PublishDate = DateTime.Now;
             _context.Articles.Add(newArticle);
             Save();
@@ -88,6 +95,14 @@ namespace api.Repositories
         {
             if (articleId != updatedArticle.Id)
             {
+                return null;
+            }
+
+            //Validate Fileds, there is a [Required] for this but didnt worked for some reason, will be returned back later
+            if (updatedArticle.Title == null ||
+                updatedArticle.Author == null)
+            {
+
                 return null;
             }
 

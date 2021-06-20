@@ -119,7 +119,6 @@ namespace apiTest
         //Better to be mockdb but encountered some problems while contructing mock architeture
         public apiContext GetInMemoryDB(string dbName = "UnitTests")
         {
-
             var options = new DbContextOptionsBuilder<apiContext>()
             .UseInMemoryDatabase(databaseName: dbName)
             .Options;

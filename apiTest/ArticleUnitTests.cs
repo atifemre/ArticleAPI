@@ -21,6 +21,7 @@ namespace apiTest
             Articles article = new()
             {
                 Title = "Add Article Unit Test",
+                Author = "Benjamin",
                 ArticleContent = "This test shall pass.",
                 StarCount = 5,
             };
@@ -38,6 +39,7 @@ namespace apiTest
             Articles article = new()
             {
                 Title = "Get Article Unit Test",
+                Author = "Benjamin",
                 ArticleContent = "This test shall pass.",
                 StarCount = 5,
             };
@@ -56,6 +58,7 @@ namespace apiTest
             Articles article = new()
             {
                 Title = "Article Unit Test",
+                Author = "Benjamin",
                 ArticleContent = "This test shall pass.",
                 StarCount = 5,
             };
@@ -78,6 +81,7 @@ namespace apiTest
             Articles article = new()
             {
                 Title = "Delete Unit Test",
+                Author = "Benjamin",
                 ArticleContent = "This test shall pass.",
                 StarCount = 5,
             };
@@ -95,12 +99,14 @@ namespace apiTest
             Articles article = new()
             {
                 Title = "0",
+                Author = "Benjamin",
                 ArticleContent = "This test shall pass.",
                 StarCount = 5,
             };
             Articles article1 = new()
             {
                 Title = "1",
+                Author = "Benjamin",
                 ArticleContent = "This test shall pass.",
                 StarCount = 5,
             };
@@ -113,6 +119,46 @@ namespace apiTest
             List<Articles> articles = articleRepo.GetArticles().ToList();
 
             Assert.True(articles.Count > 1 && articles.First().Title == "0" && articles.Skip(1).First().Title == "1");
+        }
+
+        [Fact]
+        public void Create_Article_NotValidTest()
+        {
+            Articles article = new()
+            {
+                //Title = "Add Article Unit Test",
+                Author = "Benjamin",
+                ArticleContent = "This test shall not pass.",
+                StarCount = 5,
+            };
+
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+
+            Articles newArticle = articleRepo.NewArticle(article);
+
+            Assert.Null(newArticle);
+        }
+
+        [Fact]
+        public void Update_Article_NotValidTest()
+        {
+            Articles article = new()
+            {
+                Title = "Update Article Unit Test",
+                Author = "Benjamin",
+                ArticleContent = "This test shall not pass.",
+                StarCount = 5,
+            };
+
+            IArticleRepository articleRepo = new ArticleRepository(GetInMemoryDB());
+
+            Articles newArticle = articleRepo.NewArticle(article);
+
+            newArticle.Title = null;
+
+            Articles updatedArticle = articleRepo.UpdateArticle(newArticle.Id, newArticle);
+
+            Assert.Null(updatedArticle);
         }
 
         //Better to be mockdb but encountered some problems while contructing mock architeture
