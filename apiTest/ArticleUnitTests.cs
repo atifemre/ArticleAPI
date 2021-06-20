@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace apiTest
 {
-    public class UnitTestMain
+    public class ArticleUnitTests
     {
         [Fact]
         public void Create_Article_ValidTest()

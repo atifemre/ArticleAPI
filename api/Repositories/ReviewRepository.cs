@@ -34,7 +34,14 @@ namespace api.Repositories
         }
         public IEnumerable<Reviews> GetReviews()
         {
-            throw new NotImplementedException();
+            var reviews = _context.Reviews.ToList();
+
+            if (reviews == null)
+            {
+                return null;
+            }
+
+            return reviews;
         }
         public Reviews GetReviewById(long id)
         {
